@@ -26,7 +26,7 @@ public class Currency {
         String sign = resultSet.getString("sign");
         return new Currency(id,code, fullName, sign);
     }
-    public static Currency getCurrencyWithoutID(ResultSet resultSet) throws SQLException{
+    public static Currency addCurrency(ResultSet resultSet) throws SQLException{
         String code = resultSet.getString("code");
         String fullName = resultSet.getString("fullName");
         String sign = resultSet.getString("sign");
