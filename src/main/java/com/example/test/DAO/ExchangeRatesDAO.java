@@ -113,9 +113,12 @@ public class ExchangeRatesDAO {
             statement.setString(1, baseCurrencyCode);
             statement.setString(2, targetCurrencyCode);
             ResultSet resultSet = statement.executeQuery();
+            if (resultSet.next()){
             return Optional.of(ExchangeRate.getExchangeRate(resultSet));
+            }
         } catch (SQLException e) {
             throw new CurrencyNotFoundException("Currency not found");
         }
+        return Optional.empty();
     }
 }

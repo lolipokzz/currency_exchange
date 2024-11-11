@@ -26,11 +26,11 @@ public class ExchangeRatesServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         List<ExchangeRate> rates = exchangeRatesDAO.getAllExchangeRates();
-        List<ExchangeRatesDTO> ratesdto = new ArrayList<>();
+        List<ExchangeRatesDTO> ratesDTO = new ArrayList<>();
         for(ExchangeRate r : rates) {
-            ratesdto.add(service.getExchangeRatesDTO(r));
+            ratesDTO.add(service.getExchangeRatesDTO(r));
         }
-        mapper.writeValue(resp.getWriter(), ratesdto);
+        mapper.writeValue(resp.getWriter(), ratesDTO);
     }
 
     @Override

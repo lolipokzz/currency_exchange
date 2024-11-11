@@ -1,9 +1,11 @@
 package com.example.test.Servlets;
 
 import com.example.test.DAO.CurrencyDAO;
+import com.example.test.DAO.ExchangeRatesDAO;
 import com.example.test.DTO.ExchangeRequestDTO;
 import com.example.test.DTO.ExchangeResponseDTO;
 import com.example.test.Entity.Currency;
+import com.example.test.Entity.ExchangeRate;
 import com.example.test.Exception.CurrencyNotFoundException;
 import com.example.test.Service.ExchangeService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -15,6 +17,7 @@ import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.util.Optional;
 
 @WebServlet("/exchange")
 public class ExchangeServlet extends HttpServlet {

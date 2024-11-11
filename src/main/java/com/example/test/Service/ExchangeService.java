@@ -14,17 +14,19 @@ import java.math.MathContext;
 import java.math.RoundingMode;
 import java.util.Optional;
 
+import static java.math.MathContext.DECIMAL64;
+
 
 public class ExchangeService {
     private static final ExchangeRatesDAO exchangeRatesDAO = new ExchangeRatesDAO();
     private static final ExchangeRateService exchangeRateService = new ExchangeRateService();
     private static final CurrencyDAO currencyDAO = new CurrencyDAO();
-    public ExchangeResponseDTO exchange(ExchangeRequestDTO exchangeRequest) {
-        BigDecimal amount = exchangeRequest.getAmount();
+    public ExchangeResponseDTO exchange(ExchangeRequestDTO exchangeRequest) {;
         Optional<ExchangeRate> directExchangeRateOptional = exchangeRatesDAO.findExchangeRatebyCode(exchangeRequest.getBaseCurrencyCode(), exchangeRequest.getTargetCurrencyCode());
         Optional<ExchangeRate> inDirectExchangeRateOptional = exchangeRatesDAO.findExchangeRatebyCode(exchangeRequest.getTargetCurrencyCode(), exchangeRequest.getBaseCurrencyCode());
         Optional<Currency> baseCurrencyOptional = currencyDAO.findByCode(exchangeRequest.getBaseCurrencyCode());
         Optional<Currency> targetCurrencyOptional = currencyDAO.findByCode(exchangeRequest.getTargetCurrencyCode());
+        BigDecimal amount = exchangeRequest.getAmount();
         if (directExchangeRateOptional.isPresent() && baseCurrencyOptional.isPresent() && targetCurrencyOptional.isPresent()) {
             ExchangeRate exchangeRate = directExchangeRateOptional.get();
             Currency baseCurrency = baseCurrencyOptional.get();
@@ -33,17 +35,15 @@ public class ExchangeService {
             BigDecimal convertedAmount = amount.multiply(rate);
             return new ExchangeResponseDTO(baseCurrency,targetCurrency,rate,amount,convertedAmount);
         } else if (inDirectExchangeRateOptional.isPresent() && baseCurrencyOptional.isPresent() && targetCurrencyOptional.isPresent()) {
-            ExchangeRate exchangeRate = inDirectExchangeRateOptional.get();
-            Currency baseCurrency = baseCurrencyOptional.get();
-            Currency targetCurrency = targetCurrencyOptional.get();
-            BigDecimal dividend = new BigDecimal("1");
-            BigDecimal rate = dividend.divide(exchangeRate.getRate(), 6, RoundingMode.HALF_UP);
-            BigDecimal convertedAmount = rate.multiply(amount);
-            return new ExchangeResponseDTO(baseCurrency,targetCurrency,rate,amount,convertedAmount);
+            ExchangeRate indirectExchangeRate = inDirectExchangeRateOptional.get();
+            BigDecimal rate = BigDecimal.ONE.divide(indirectExchangeRate.getRate(), DECIMAL64)
+                    .setScale(6, RoundingMode.HALF_EVEN);
+            ExchangeRatesDTO exchangeRatesDTO = exchangeRateService.getExchangeRatesDTO(indirectExchangeRate);
+            BigDecimal convertedAmount = amount.multiply(rate);
+            return new ExchangeResponseDTO(exchangeRatesDTO.getBaseCurrency(),exchangeRatesDTO.getTargetCurrency(),exchangeRatesDTO.getRate(),amount,convertedAmount);
         } else {
             throw new ExchangeRateNotFound("No exchange rates was found");
         }
-
     }
 
 }

@@ -24,11 +24,6 @@ public class CurrencyServlet extends HttpServlet {
         Currency currency = currencyInfo.findByCode(code).orElseThrow(()->new CurrencyNotFoundException(code+" not found"));
         mapper.writeValue(out, currency);
     }
-
-    @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-    }
-
     private static String getCurrencyFromUrl(HttpServletRequest req) {
         String path = req.getRequestURL().toString();
         String[] pathPart = path.split("/");

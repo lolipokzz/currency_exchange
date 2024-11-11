@@ -23,6 +23,15 @@ public class ExchangeRateServlet extends HttpServlet {
     private static final ExchangeRatesDAO exchangeRatesDAO = new ExchangeRatesDAO();
     private static final ExchangeRateService service = new ExchangeRateService();
     private static final ObjectMapper mapper = new ObjectMapper();
+
+    @Override
+    protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        if(req.getMethod().equalsIgnoreCase("PATCH")) {
+            doPatch(req, resp);
+        }
+        super.service(req, resp);
+    }
+
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String url = getCurreciesFromURL(req);
@@ -35,15 +44,18 @@ public class ExchangeRateServlet extends HttpServlet {
         mapper.writeValue(resp.getWriter(),service.getExchangeRatesDTO(exchangeRate));
     }
     protected void doPatch(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        BigDecimal rate = BigDecimal.valueOf(Double.parseDouble(req.getParameter("rate")));
-        String url = getCurreciesFromURL(req);
-        Validation.validateExchangeRate(url);
-        String firstCode = url.substring(0,3);
-        String secondCode = url.substring(3,6);
+        String parameter = req.getReader().readLine();
+        String rate = parameter.replace("rate=","");
+        BigDecimal rateBigDecimal = BigDecimal.valueOf(Double.parseDouble(rate));
+        String currencyCodes = req.getPathInfo().replaceFirst("/", "");
+        Validation.validateExchangeRate(currencyCodes);
+        String firstCode = currencyCodes.substring(0,3);
+        String secondCode = currencyCodes.substring(3,6);
         Currency firstCurrency = currencyDAO.findByCode(firstCode).orElseThrow(()->new CurrencyNotFoundException(firstCode+" not found"));
-        Currency secondCurrency = currencyDAO.findByCode(secondCode).orElseThrow(()->new CurrencyNotFoundException(firstCode+" not found"));
-        ExchangeRate exchangeRate =  new ExchangeRate(firstCurrency.getId(),secondCurrency.getId(),rate);
+        Currency secondCurrency = currencyDAO.findByCode(secondCode).orElseThrow(()->new CurrencyNotFoundException(secondCode+" not found"));
+        ExchangeRate exchangeRate =  new ExchangeRate(firstCurrency.getId(),secondCurrency.getId(),rateBigDecimal);
         exchangeRatesDAO.setRate(exchangeRate);
+        mapper.writeValue(resp.getWriter(),service.getExchangeRatesDTO(exchangeRate));
     }
     private static String getCurreciesFromURL(HttpServletRequest request) {
         String path = request.getRequestURL().toString();
