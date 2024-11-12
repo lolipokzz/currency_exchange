@@ -65,10 +65,13 @@ public class ExchangeRatesDAO {
             statement.setInt(1, baseCurrencyId);
             statement.setInt(2, targetCurrencyId);
             ResultSet resultSet = statement.executeQuery();
-            return Optional.of(ExchangeRate.getExchangeRate(resultSet));
+            if (resultSet.next()){
+                return Optional.of(ExchangeRate.getExchangeRate(resultSet));
+            }
         }catch (SQLException e){
             throw new ExchangeRateNotFound("Exchange rate not found");
         }
+        return Optional.empty();
     }
     public void addNewExchangeRate(ExchangeRate exchangeRate) {
         String query = "insert into ExchangeRates(basecurrencyid, targetcurrencyid, rate) VALUES (?,?,?)";

@@ -29,7 +29,7 @@ public class Validation {
         if (currency.getCode().isEmpty() || currency.getFullName().isEmpty() || currency.getSign().isEmpty()){
             throw new InvalidCurrencyInput("Incorrect currency input");
         }
-        if (currency.getCode().length()!=1){
+        if (currency.getSign().length()!=1){
             throw new InvalidCurrencySign("Invalid currency sign");
         }
     }
