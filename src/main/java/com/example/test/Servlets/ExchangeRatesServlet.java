@@ -5,6 +5,7 @@ import com.example.test.DTO.ExchangeRatesDTO;
 import com.example.test.Entity.Currency;
 import com.example.test.Entity.ExchangeRate;
 import com.example.test.Service.ExchangeRateService;
+import com.example.test.Utils.Validation;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -43,6 +44,7 @@ public class ExchangeRatesServlet extends HttpServlet {
         int baseCurrencyId = baseCurrency.getId();
         int targetCurrencyId = targetCurrency.getId();
         ExchangeRate exchangeRate = new ExchangeRate(baseCurrencyId,targetCurrencyId,rate);
+        Validation.validateNewExchangeRate(exchangeRate);
         exchangeRatesDAO.addNewExchangeRate(exchangeRate);
         mapper.writeValue(resp.getWriter(), service.getExchangeRatesDTO(exchangeRate));
     }

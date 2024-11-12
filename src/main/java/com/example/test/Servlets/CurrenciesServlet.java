@@ -37,5 +37,6 @@ public class CurrenciesServlet extends HttpServlet {
         Currency currency = new Currency(code, fullName, sign);
         Validation.validateNewCurrency(currency);
         currencyInfo.addNewCurrency(currency);
+        resp.setStatus(HttpServletResponse.SC_CREATED);
     }
 }

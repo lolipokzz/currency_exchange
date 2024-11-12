@@ -2,6 +2,8 @@ package com.example.test.DAO;
 import com.example.test.Entity.Currency;
 import com.example.test.Entity.ExchangeRate;
 import com.example.test.Exception.CurrencyNotFoundException;
+import com.example.test.Exception.ExchangeRateInputFail;
+import com.example.test.Exception.ExchangeRateNotFound;
 import com.example.test.Utils.DbConnection;
 
 import java.sql.*;
@@ -37,7 +39,7 @@ public class ExchangeRatesDAO {
             return rates;
 
         }catch (SQLException e){
-            throw new CurrencyNotFoundException("Currency not found");
+            throw new ExchangeRateNotFound("Exchange rate not found");
         }
     }
     public Optional<ExchangeRate>  findExchangeRatebyID(int baseCurrencyId, int targetCurrencyId) {
@@ -65,7 +67,7 @@ public class ExchangeRatesDAO {
             ResultSet resultSet = statement.executeQuery();
             return Optional.of(ExchangeRate.getExchangeRate(resultSet));
         }catch (SQLException e){
-            throw new CurrencyNotFoundException("Currency not found");
+            throw new ExchangeRateNotFound("Exchange rate not found");
         }
     }
     public void addNewExchangeRate(ExchangeRate exchangeRate) {
@@ -76,7 +78,7 @@ public class ExchangeRatesDAO {
             statement.setBigDecimal(3, exchangeRate.getRate());
             statement.executeUpdate();
         }catch (SQLException e){
-            throw new CurrencyNotFoundException("Currency not found");
+            throw new ExchangeRateInputFail("Exchange rate input failed");
         }
     }
     public void setRate(ExchangeRate exchangeRate) {
@@ -87,7 +89,7 @@ public class ExchangeRatesDAO {
             statement.setInt(3, exchangeRate.getTargetCurrencyId());
             statement.executeUpdate();
         }catch (SQLException e){
-            throw new CurrencyNotFoundException("Currency not found");
+            throw new ExchangeRateNotFound("Exchange rate not found");
         }
     }
     public Optional<ExchangeRate>  findExchangeRatebyCode(String baseCurrencyCode, String targetCurrencyCode) {
@@ -117,7 +119,7 @@ public class ExchangeRatesDAO {
             return Optional.of(ExchangeRate.getExchangeRate(resultSet));
             }
         } catch (SQLException e) {
-            throw new CurrencyNotFoundException("Currency not found");
+            throw new ExchangeRateNotFound("Exchange rate not found!");
         }
         return Optional.empty();
     }

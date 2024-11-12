@@ -16,13 +16,13 @@ public class ExceptionHandler extends HttpFilter {
     protected void doFilter(HttpServletRequest req, HttpServletResponse res, FilterChain chain) throws ServletException, IOException {
         try {
             super.doFilter(req, res, chain);
-        }catch (CurrencyNotFoundException | CurrencyExchangeNotFound e) {
+        }catch (CurrencyNotFoundException | CurrencyExchangeNotFound | InvalidCurrencyCode e) {
             writeErrorResponse(res,HttpServletResponse.SC_NOT_FOUND,e);
-        }catch (InvalidCurrencyCode | InvalidCurrencyInput e){
+        }catch (InvalidCurrencyInput | CurrencyCodeIsEmpty | InvalidCurrencyExchangeInput | InvalidParameter e){
             writeErrorResponse(res,HttpServletResponse.SC_BAD_REQUEST,e);
         }catch (DbConnectionException e){
             writeErrorResponse(res,HttpServletResponse.SC_INTERNAL_SERVER_ERROR,e);
-        }catch (CurrencyAlreadyExists e){
+        }catch (CurrencyAlreadyExists | ExchangeRateAlreadyExists e){
             writeErrorResponse(res,HttpServletResponse.SC_CONFLICT,e);
         }
     }
